@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">Camera permission is needed</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="no_camera_found">No camera found on device</string>
+    <string name="record">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="permission_request">Permission for camera and audio recording is required</string>
+    <string name="listening_now">Listening now...</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
+
+</resources>

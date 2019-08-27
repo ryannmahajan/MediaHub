@@ -3,7 +3,9 @@ package com.ryannm.android.myapplication;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -19,11 +21,14 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 4545;
+    MediaPlayer audioPlayer;
+    private boolean audioPrepared;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        audioPlayer = new MediaPlayer();
 
         ConstraintLayout videoLayout = findViewById(R.id.videoLayout);
         videoLayout.setOnClickListener(v -> recordVideo());
@@ -35,7 +40,23 @@ public class MainActivity extends AppCompatActivity {
         pictureLayout.setOnClickListener(v -> clickPicture());
 
         Button showRecordings = findViewById(R.id.show_recordings);
-        showRecordings.setOnClickListener(v -> startActivity(ShowRecordingsFragment.newIntent(this)));
+        showRecordings.setOnClickListener(v -> playAudioOnly());//startActivity(ShowRecordingsFragment.newIntent(this)));
+    }
+
+    private void playAudioOnly() {
+        if (!audioPrepared) {
+            try {
+                audioPlayer.setDataSource(this, Uri.fromFile(new File(Helper.getAudioPath(this))));
+                audioPlayer.prepare();
+                audioPlayer.start();
+                audioPrepared = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Create a recording first", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            audioPlayer.start();
+        }
     }
 
     private void recordVideo() {
@@ -52,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private void recordAudio() {
         String audioRecordPermission = Manifest.permission.RECORD_AUDIO;
         String filePath = Helper.getAudioPath(this);
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, audioRecordPermission)) {
+        if (ActivityCompat.checkSelfPermission(this, audioRecordPermission)==PackageManager.PERMISSION_GRANTED) {
             MediaRecorder recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
